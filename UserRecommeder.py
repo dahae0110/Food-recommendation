@@ -33,6 +33,7 @@ df2.to_csv('recipes_sample5000.csv', index=False, header=True)
 import numpy as np
 import numba as nb
 from sklearn.feature_extraction.text import TfidfVectorizer
+
 vectorizer = TfidfVectorizer()
 
 ings = new_df.directions.tolist() 
@@ -42,8 +43,12 @@ ings2 = [" ".join(x) for x in ings]
 vectorizer.fit(ings2)
 recipe_vectors = vectorizer.transform(ings2) 
 
+print("Please describe how to cook with what spices/herbs (ingredients also possible)\n") # ask the user if they want Maze or Move version
+
+answer = input() #set input by the user as a variable 'answer'
+
 #user's input (natural language input)
-ingredient_vectors = vectorizer.transform(["I want to cook something with chili and garlic"])
+ingredient_vectors = vectorizer.transform([answer])
 
 vecs = recipe_vectors.astype('float32')
 vecs = vecs.toarray()
@@ -81,10 +86,26 @@ scores = fast_cosine_matrix(ing_vec[0],vecs)
 
 indices = np.argsort(scores)[::-1] #return index. sort in other way around -> reverse array 
 
+print("\n")
+print("How many recipes would you like? e.g. Top 5\n")
+num = input()
+num_final = int(num)
 
-print (new_df.title[indices[0]])
+#print (new_df.title[indices[0]])
 #print(indices[0])
+print("\n")
 
-for i in range(5):
-    print(new_df.title[indices[i]])
+for i in range(num_final):
+    print("[" + str(i+1) + "] " + new_df.title[indices[i]])
     
+print("\n")
+print("What's your selection?\n")
+select = input()
+select_final = int(select)-1
+
+print("\n")
+print ("< " + new_df.title[indices[select_final]] + " > \n")
+print ("Ingredients \n\n" + new_df.ingredients[indices[select_final]])
+print("\n")
+print ("Directions \n\n" + new_df.directions[indices[select_final]])
+
